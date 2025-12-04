@@ -1,24 +1,18 @@
 import numpy as np
-from scipy import ndimage
+from scipy.ndimage import convolve
 
 with open('day-four.txt') as f:
-    grid = f.read().splitlines()
+    lines = f.read().splitlines()
 
-grid = [list(line) for line in grid]
+# Parse grid: @ = 1, . = 0
+grid = np.array([[1 if c == '@' else 0 for c in line] for line in lines])
 
-for line in grid:
-    for i in range(len(line)):
-        if line[i] == '@':
-            line[i] = 1
-        else:
-            line[i] = 0
-
-grid = np.array(grid)
-
+# Kernel to count 8 adjacent neighbors
 kernel = np.array([[1, 1, 1],
-                      [1, 0, 1],
-                      [1, 1, 1]])
+                   [1, 0, 1],
+                   [1, 1, 1]])
 
-nbhr_counts = ndimage.convolve(grid, kernel, mode='constant', cval = 0)
+nbhr_counts = convolve(grid, kernel, mode='constant', cval=0)
 
+# Count @ cells with fewer than 4 @ neighbors
 print(np.sum((grid == 1) & (nbhr_counts < 4)))
